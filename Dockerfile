@@ -1,4 +1,4 @@
-FROM ghcr.io/dgeliko/golang:1.17-alpine
+FROM ghcr.io/dgeliko/golang:1.17-alpine AS build
 
 WORKDIR /src/
 COPY main.go go.* /src/
