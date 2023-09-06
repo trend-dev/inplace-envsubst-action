@@ -1,4 +1,4 @@
-FROM ghcr.io/gcpug/appengine-go:latest AS build
+FROM ghcr.io/dgeliko/golang:1.15-alpine AS build
 
 WORKDIR /src/
 COPY main.go go.* /src/
