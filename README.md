@@ -74,4 +74,4 @@ go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
 
 The build script requires the exact Go version from `go.mod`, disables CGO and VCS metadata, and removes local build paths. It can cross-compile both binaries from Linux or macOS. `--check` rebuilds into a temporary directory and fails if the committed binaries or checksums differ. Checksums detect corruption; the selected repository revision supplies the trust boundary.
 
-CI checks binary reproducibility, validates the launcher and workflows, and runs the composite action against the repository fixtures, including native x64 and ARM64 execution. CI builds verify this repository; workflows using the action only download and run the committed binaries. Dependabot checks GitHub Actions updates weekly.
+CI checks binary reproducibility, validates the launcher and workflows, and runs the composite action against the repository fixtures, including native x64 and ARM64 execution. CI builds verify this repository; workflows using the action only download and run the committed binaries. Dependabot checks GitHub Actions updates monthly and assigns update pull requests to `sspakush`.
