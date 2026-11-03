@@ -4,7 +4,7 @@ This GitHub Action replaces `${VARIABLE}` placeholders in files using the workfl
 
 ```yaml
 - name: Substitute environment variables
-  uses: trend-dev/inplace-envsubst-action@experimental
+  uses: trend-dev/inplace-envsubst-action@v2
   env:
     COOL: "cool value"
   with:
@@ -20,7 +20,7 @@ This GitHub Action replaces `${VARIABLE}` placeholders in files using the workfl
 
 ## Running without Docker
 
-The binaries are committed in `bin/` alongside `action.yml`. GitHub downloads them automatically with the action when resolving `uses: trend-dev/inplace-envsubst-action@experimental` (or a tag or commit SHA). No separate release download or GitHub API token is required.
+The binaries are committed in `bin/` alongside `action.yml`. GitHub downloads them automatically with the action when resolving `uses: trend-dev/inplace-envsubst-action@v2` (or another tag or commit SHA). No separate release download or GitHub API token is required.
 
 The composite action selects the binary for the runner's architecture, verifies the bundled SHA-256 checksums, and executes it directly. The binary, launcher, and inputs all come from the same action revision. All existing inputs and the deprecated parallel-processing alias remain supported.
 
