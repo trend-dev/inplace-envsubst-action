@@ -4,15 +4,17 @@ inputs:
   working-directory:
     description: "Current working directory where the recursive search takes place"
     required: false
-    default: "/"
+    default: "."
   fail_on_missing_variables:
     description: "If the step should exit with a status code 1 if an environment variable defined as a placeholder is not found in the current running environment"
     required: false
     default: "false"
-  replace_in_paralel:
-    description: "Replaces the files in parallel. Useful for large files"
+  replace_in_parallel:
+    description: "Replaces files using a bounded pool of parallel workers"
     required: false
-    default: "false"
+  replace_in_paralel:
+    description: "Deprecated alias of replace_in_parallel; used when replace_in_parallel is not set"
+    required: false
   whitelist:
     description: "Json array representing the env variables to be whitelisted. Only the whitelisted variables will be replaced, the rest will be ignored"
     required: false

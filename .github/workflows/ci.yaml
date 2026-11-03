@@ -3,14 +3,44 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
+      - experimental
+
+permissions:
+  contents: read
 
 jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+      - name: Vet
+        run: go vet ./...
+      - name: Test with race detector
+        run: go test -race -cover ./...
+      - name: Check vulnerabilities
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+      - name: Validate workflows
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Test action
         uses: ./
         env:
@@ -34,7 +64,7 @@ jobs:
           function test_content {
               path=$1
               expected=$2
-              actual=$(cat $path)
+              actual=$(cat "$path")
               if [[ "$actual" != "$expected" ]]; then
                   echo "Content does not match ! Expected '$expected' but got '$actual'"
                   exit 1
@@ -60,13 +90,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Test action
         uses: ./
         env:
           COOL: "test value"
         with:
           working-directory: testdir
+          replace_in_parallel: "true"
       - name: Test replaced files matches expected content
         working-directory: testdir
         run: |
@@ -75,7 +108,7 @@ jobs:
           function test_content {
               path=$1
               expected=$2
-              actual=$(cat $path)
+              actual=$(cat "$path")
               if [[ "$actual" != "$expected" ]]; then
                   echo "Content does not match ! Expected '$expected' but got '$actual'"
                   exit 1
@@ -94,7 +127,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Test action
         uses: ./
         env:
@@ -111,7 +146,7 @@ jobs:
           function test_content {
               path=$1
               expected=$2
-              actual=$(cat $path)
+              actual=$(cat "$path")
               if [[ "$actual" != "$expected" ]]; then
                   echo "Content does not match ! Expected '$expected' but got '$actual'"
                   exit 1
@@ -124,7 +159,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Test action
         uses: ./
         env:
@@ -142,7 +179,7 @@ jobs:
           function test_content {
               path=$1
               expected=$2
-              actual=$(cat $path)
+              actual=$(cat "$path")
               if [[ "$actual" != "$expected" ]]; then
                   echo "Content does not match ! Expected '$expected' but got '$actual'"
                   exit 1
@@ -155,7 +192,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Test action
         uses: ./
         env:
@@ -170,7 +209,7 @@ jobs:
           function test_content {
               path=$1
               expected=$2
-              actual=$(cat $path)
+              actual=$(cat "$path")
               if [[ "$actual" != "$expected" ]]; then
                   echo "Content does not match ! Expected '$expected' but got '$actual'"
                   exit 1

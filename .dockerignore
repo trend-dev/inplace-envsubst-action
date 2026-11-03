@@ -1,0 +1,6 @@
+.git
+.github
+.idea
+testdir
+*_test.go
+README.md
