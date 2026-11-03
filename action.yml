@@ -25,8 +25,20 @@ inputs:
     description: "Json object input for searching files to be replaced. Contains the following keys: patterns (array strings of regex to match files), files (array of strings to match file names), depth: the search depth to search recursively"
     required: false
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: composite
+  steps:
+    - name: Run environment substitution
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        INPUT_WORKING-DIRECTORY: ${{ inputs.working-directory }}
+        INPUT_FAIL_ON_MISSING_VARIABLES: ${{ inputs.fail_on_missing_variables }}
+        INPUT_REPLACE_IN_PARALLEL: ${{ inputs.replace_in_parallel }}
+        INPUT_REPLACE_IN_PARALEL: ${{ inputs.replace_in_paralel }}
+        INPUT_WHITELIST: ${{ inputs.whitelist }}
+        INPUT_BLACKLIST: ${{ inputs.blacklist }}
+        INPUT_SEARCH_INPUT: ${{ inputs.search_input }}
+      run: bash "$ACTION_PATH/scripts/run.sh"
 branding:
   icon: 'terminal'
   color: 'blue'

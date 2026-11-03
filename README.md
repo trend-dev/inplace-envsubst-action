@@ -1,6 +1,6 @@
 # Inplace Environment Substitution for Files
 
-This Docker-based GitHub Action replaces `${VARIABLE}` placeholders in files using the workflow step's environment. It runs on Linux runners.
+This GitHub Action replaces `${VARIABLE}` placeholders in files using the workflow step's environment. It runs prebuilt, static Go binaries on Linux x64 and ARM64 runners. Docker, Go, and a build step are not required in the calling workflow.
 
 ```yaml
 - name: Substitute environment variables
@@ -17,6 +17,14 @@ This Docker-based GitHub Action replaces `${VARIABLE}` placeholders in files usi
         "depth": 2
       }
 ```
+
+## Running without Docker
+
+The binaries are committed in `bin/` alongside `action.yml`. GitHub downloads them automatically with the action when resolving `uses: trend-dev/inplace-envsubst-action@experimental` (or a tag or commit SHA). No separate release download or GitHub API token is required.
+
+The composite action selects the binary for the runner's architecture, verifies the bundled SHA-256 checksums, and executes it directly. The binary, launcher, and inputs all come from the same action revision. All existing inputs and the deprecated parallel-processing alias remain supported.
+
+Supported runners: Linux `x86_64` (GitHub `X64`) and `aarch64`/`arm64` (GitHub `ARM64`), including `ubuntu-latest` and `ubuntu-24.04-arm`. Bash and either `sha256sum` or `shasum` must be available. Other operating systems and architectures fail with a clear error.
 
 ## Inputs
 
@@ -53,13 +61,17 @@ Input values, template contents, and environment values are not included in vali
 
 ## Development
 
-The project uses Go 1.27.3 and has no third-party runtime dependencies. The builder uses the official Go image pinned by digest; the final image uses `scratch`.
+The project uses Go 1.27.3 and has no third-party runtime dependencies. After changing Go source files or the Go version, rebuild both bundled Linux binaries and commit `bin/` with the source changes:
 
 ```sh
+bash scripts/build.sh
+bash scripts/build.sh --check
+bash scripts/test-runner.sh
 go test -race -cover ./...
 go vet ./...
 go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
-docker build -t inplace-envsubst-action .
 ```
 
-CI also validates workflows and runs the Docker action against the repository fixtures. Dependabot checks GitHub Actions and Docker image updates weekly.
+The build script requires the exact Go version from `go.mod`, disables CGO and VCS metadata, and removes local build paths. It can cross-compile both binaries from Linux or macOS. `--check` rebuilds into a temporary directory and fails if the committed binaries or checksums differ. Checksums detect corruption; the selected repository revision supplies the trust boundary.
+
+CI checks binary reproducibility, validates the launcher and workflows, and runs the composite action against the repository fixtures, including native x64 and ARM64 execution. CI builds verify this repository; workflows using the action only download and run the committed binaries. Dependabot checks GitHub Actions updates weekly.

@@ -33,9 +33,16 @@ jobs:
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
       - name: Validate workflows
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - name: Verify bundled binaries match the source
+        run: bash scripts/build.sh --check
+      - name: Test action launcher
+        run: bash scripts/test-runner.sh
 
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -139,6 +146,7 @@ jobs:
           working-directory: testdir
           whitelist: |
             [ "whitelisted" ]
+          replace_in_paralel: "true"
       - name: Test replaced files matches expected content
         working-directory: testdir
         run: |
